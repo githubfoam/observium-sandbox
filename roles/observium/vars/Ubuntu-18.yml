@@ -1,0 +1,12 @@
+---
+# JDK version options include:
+#   - java
+#   - openjdk-11-jdk
+java_packages:
+# - openjdk-11-jdk
+- apt-transport-https
+- openjdk-8-jre-headless
+- uuid-runtime
+- pwgen
+- curl
+- dirmngr

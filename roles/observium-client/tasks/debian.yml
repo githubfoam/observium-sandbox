@@ -1,0 +1,209 @@
+---
+# handlers file for common
+# - name: Enable the universe and multiverse repositories
+#   shell: apt-add-repository universe
+- name: Enable the universe and multiverse repositories
+  shell: apt-add-repository multiverse
+
+- name: debian | Installing snmpd
+  apt:
+    name: snmpd
+    state: present
+
+- name: start and enable snmpd
+  service:
+    name: "snmpd"
+    state: started
+    enabled: yes
+
+- name: config | Configuring snmpd
+  template:
+    src: "etc/snmp/snmpd.conf.j2"
+    dest: "/etc/snmp/snmpd.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
+    backup: yes
+  # notify:
+  #   - 'restart {{ snmpd_handler }}'
+  when: ansible_os_family == "Debian"
+
+- name: restart snmpd
+  service:
+    name: "snmpd"
+    state: restarted
+
+
+
+# - name: debian | Installing Debian Pre-Req Packages
+#   apt:
+#     name: "{{ item }}"
+#     state: "present"
+#   with_items: '{{ observium_debian_pre_reqs }}'
+
+# - name: debian | Installing LibVirt Packages to monitor (If Desired)
+#   apt:
+#     name: "{{ libvirt-bin }}"
+#     state: "present"
+#     when: observium_monitor_libvirt_vms
+
+# - name: install | Downloading Observium to {{ observium_dl_dir }}
+#   get_url:
+#     url: "{{ observium_dl_url }}/{{ observium_dl_package }}"
+#     dest: "{{ observium_dl_dir }}/{{ observium_dl_package }}"
+#
+# - name: install | Extracting Observium Package to {{ observium_dl_dir }}
+#   unarchive:
+#     src: "{{ observium_dl_dir }}/{{ observium_dl_package }}"
+#     dest: "{{ observium_dl_dir }}"
+#     creates: "{{ observium_base_dir }}/poller.php"
+#     copy: no
+#
+# - name: config | Creating Observium DB
+#   mysql_db:
+#     name: "{{ observium_db_info.db }}"
+#     state: "present"
+#
+# - name: config | Creating Observium DB Permissions
+#   mysql_user:
+#     name: "{{ observium_db_info.user }}"
+#     password: "{{ observium_db_info.password }}"
+#     priv: "observium.*:ALL"
+#
+# - name: config | Configuring Observium
+#   template:
+#     src: "config.php.j2"
+#     dest: "{{ observium_base_dir }}/config.php"
+
+# - name: config | Creating Logs and Graph Directories
+#   file:
+#     path: "{{ item }}"
+#     state: "directory"
+#   with_items:
+#     - '{{ observium_base_dir }}/logs'
+#     - '{{ observium_base_dir }}/rrd'
+#
+# - name: config | Setting Permissions on Graph Directory
+#   file:
+#     path: "{{ observium_base_dir }}/rrd"
+#     state: "directory"
+#     owner: "{{ web_owner }}"
+#     group: "{{ web_group }}"
+#     recurse: yes
+#
+# - name: config | Checking if Observium DB Has Been Populated
+#   stat:
+#     path: "/root/.observium_db_populated"
+#   register: "observium_db_populated_check"
+#
+# - name: config | Populating Observium DB
+#   command: "{{ observium_base_dir }}/discovery.php -u"
+#   register: "observium_db_populated"
+#   when: not observium_db_populated_check.stat.exists
+#
+# - name: config | Marking Observium DB as Populated
+#   file:
+#     path: "/root/.observium_db_populated"
+#     state: "touch"
+#   when: observium_db_populated.changed
+#
+# - name: config | Configuring Apache Site
+#   template:
+#     src: "etc/apache2/sites-available/000-default.conf.j2"
+#     dest: "/etc/apache2/sites-available/000-default.conf"
+#     owner: "root"
+#     group: "root"
+#     mode: 0644
+#     backup: yes
+#   notify:
+#     - 'restart {{ webserver_handler }}'
+#   when: ansible_os_family == "Debian"
+#
+# - name: config | Checking Enabled PHP Mods
+#   command: "php -m"
+#   register: php_mods_enabled
+#   changed_when: false
+#
+# - name: config | Ensuring PHP Mods are Enabled
+#   command: "phpenmod {{ item }}"
+#   with_items:
+#     - 'mcrypt'
+#   when: item not in php_mods_enabled.stdout_lines
+#
+# - name: config | Ensuring Apache Mods are Enabled
+#   apache2_module:
+#     name: "{{ item }}"
+#     state: "present"
+#   notify:
+#     - 'restart {{ webserver_handler }}'
+#   with_items:
+#     - 'rewrite'
+#
+# - name: users | Checking if Observium Admin Account Has Been Created
+#   stat:
+#     path: "/root/.observium_admin_account_created"
+#   register: "observium_admin_account_created_check"
+#
+# - name: users | Creating Observium Admin Account
+#   command: "{{ observium_base_dir }}/adduser.php {{ observium_admin_account_info.username }} {{ observium_admin_account_info.password }} {{ observium_admin_account_info.level }} {{ observium_admin_account_info.email }}"
+#   register: "observium_admin_account_created"
+#   when: not observium_admin_account_created_check.stat.exists
+#
+# - name: users | Marking Observium Admin Account as Created
+#   file:
+#     path: "/root/.observium_admin_account_created"
+#     state: "touch"
+#     when: observium_admin_account_created.changed
+#
+# ### CRON CONFIGURATION ###
+# # Adding > /dev/null to commands to supress stdout normal emails to root.
+# # it will send only emails to root if there is some stderr
+#
+# - name: ensure /etc/cron.d exists
+#   file:
+#     path: '/etc/cron.d'
+#     state: directory
+#
+# # SHELL and PATH Variables are required to be added for lot of scripts that CRON runs:
+# # Adds a variable to a file under /etc/cron.d
+# - name: PATH added to crontab observium
+#   cronvar:
+#     name: PATH
+#     value: "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+#     user: root
+#     cron_file: 'observium'
+#
+# - name: Schedule jobs for observium
+#   cron: name='{{ item.name }}'
+#         job='{{ item.job }}'
+#         user='root'
+#         cron_file='observium'
+#         hour='{{ item.hour }}'
+#         minute='{{ item.minute }}'
+#         state=present
+#   with_items:
+#
+#     - name: "Run a complete discovery of all devices once every 6 hours"
+#       job: "/opt/observium/discovery.php -h all >> /dev/null 2>&1"
+#       hour: "*/6"
+#       minute: "33"
+#
+#     - name: "Run automated discovery of newly added devices every 5 minutes"
+#       job: "/opt/observium/discovery.php -h new >> /dev/null 2>&1"
+#       hour: "*"
+#       minute: "*/5"
+#
+#     - name: "Run multithreaded poller wrapper every 5 minutes"
+#       job: "/opt/observium/poller-wrapper.py 6 >> /dev/null 2>&1"
+#       hour: "*"
+#       minute: "*/5"
+#
+#     - name: "Run housekeeping script daily for syslog, eventlog and alert log"
+#       job: "/opt/observium/housekeeping.php -ysel >> /dev/null 2>&1"
+#       hour: "5"
+#       minute: "13"
+#
+#     - name: "Run housekeeping script daily for rrds, ports, orphaned entries in the database and performance data"
+#       job: "/opt/observium/housekeeping.php -yrptb >> /dev/null 2>&1"
+#       hour: "4"
+#       minute: "47"

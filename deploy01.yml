@@ -1,0 +1,7 @@
+---
+- hosts: ansi01
+  become: yes
+  roles:
+    - common
+    - ansible-role-apache2
+    - observium-client

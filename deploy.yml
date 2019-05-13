@@ -1,0 +1,6 @@
+---
+- hosts: control-machine
+  become: yes
+  roles:
+    - common
+    - observium

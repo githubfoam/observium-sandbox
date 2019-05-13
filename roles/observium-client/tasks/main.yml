@@ -1,0 +1,9 @@
+---
+# tasks file for common
+- name: set_facts | Setting Debian Facts
+  set_fact:
+    snmpd_handler: "snmpd"
+    when: ansible_os_family == "Debian"
+
+- include: debian.yml
+  when: ansible_os_family == "Debian"

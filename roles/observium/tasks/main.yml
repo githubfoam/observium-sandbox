@@ -1,0 +1,11 @@
+---
+# tasks file for common
+- name: set_facts | Setting Debian Facts
+  set_fact:
+    web_group: "www-data"
+    web_owner: "www-data"
+    webserver_handler: "apache2"
+    when: ansible_os_family == "Debian"
+
+- include: debian.yml
+  when: ansible_os_family == "Debian"
