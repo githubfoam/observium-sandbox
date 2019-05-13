@@ -1,4 +1,4 @@
-restapi-sandbox
+observium-sandbox
 =========
 observium testing
 
@@ -19,10 +19,9 @@ File:
 
 Command:
 
-git clone this-project
-vagrant up (control-machine, ansi01) OR  
-vagrant up control-machine  
+git clone this-project  
 vagrant up ansi01  
+vagrant up control-machine  
 control-machine - observium server  
 http://192.168.45.20  
 login : user/password admin/observium  
