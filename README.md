@@ -2,6 +2,9 @@ observium-sandbox
 =========
 observium testing
 
+observium  http://www.observium.org  
+vagrant https://www.vagrantup.com  
+virtualbox https://www.virtualbox.org
 
 ----------------
 
@@ -15,7 +18,7 @@ File:
       roles:
          - observium
          - observium-client
-         - https://github.com/githubfoam/ansible-role-apache2.git
+         - src: https://github.com/githubfoam/ansible-role-apache2.git
 
 Command:
 
@@ -28,8 +31,9 @@ login : user/password admin/observium
 ansi01 - observium client  
 http://192.168.45.21  
 vagrant cloud  
-https://app.vagrantup.com/vagrantfoam/boxes/observiumsandbox
-
+https://app.vagrantup.com/vagrantfoam/boxes/observiumsandbox  
+ansible role observium  
+https://github.com/githubfoam/ansible-role-observium  
 License
 -------
 
