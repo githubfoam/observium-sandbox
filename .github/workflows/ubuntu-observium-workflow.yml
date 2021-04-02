@@ -1,0 +1,50 @@
+name: "Ubuntu observium CI workflow"
+
+
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+
+  #https://docs.observium.org/install_debian/
+  ubuntu-1604-observium-automated-job:
+    name: "ubuntu-16.04 observium automated job"
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: "os fingerprinting"
+      run: hostnamectl status
+    - name: "Automated Installation"
+      run: |
+        sudo wget http://www.observium.org/observium_installscript.sh
+        sudo chmod +x observium_installscript.sh
+        sudo ./observium_installscript.sh
+        
+  #https://docs.observium.org/install_debian/
+  ubuntu-1804-observium-automated-job:
+    name: "ubuntu-18.04 observium automated job"
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: "os fingerprinting"
+      run: hostnamectl status
+    - name: "Automated Installation"
+      run: |
+        sudo wget http://www.observium.org/observium_installscript.sh
+        sudo chmod +x observium_installscript.sh
+        sudo ./observium_installscript.sh
+        
+  #https://docs.observium.org/install_debian/
+  ubuntu-2004-observium-automated-job:
+    name: "ubuntu-20.04 observium automated job"
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: "os fingerprinting"
+      run: hostnamectl status
+    - name: "Automated Installation"
+      run: |
+        sudo wget http://www.observium.org/observium_installscript.sh
+        sudo chmod +x observium_installscript.sh
+        sudo ./observium_installscript.sh  
